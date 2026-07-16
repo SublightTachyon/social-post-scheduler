@@ -1,0 +1,12 @@
+[
+  {
+    "id": "sample-1",
+    "url": "https://example.com/images/sample-1.jpg",
+    "caption": "Sample caption for the first scheduled post."
+  },
+  {
+    "id": "sample-2",
+    "url": "https://example.com/images/sample-2.jpg",
+    "caption": "Sample caption for the second scheduled post."
+  }
+]

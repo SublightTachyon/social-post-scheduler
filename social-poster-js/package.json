@@ -1,0 +1,14 @@
+{
+  "name": "social-poster-js",
+  "version": "1.0.0",
+  "description": "A small scheduled social media poster starter using official platform APIs.",
+  "type": "module",
+  "scripts": {
+    "once": "node src/index.js --once",
+    "force": "node src/index.js --once --force",
+    "daemon": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
