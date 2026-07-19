@@ -5,7 +5,8 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from platforms import post_to_facebook, post_to_instagram, post_to_x
+from platforms import post_to_facebook, post_to_instagram, post_to_x, post_to_bluesky
+from image_manager import sync_images_from_folder
 
 
 ROOT_DIR = Path(__file__).resolve().parent
@@ -66,6 +67,8 @@ def post_to_enabled_platforms(image, dry_run):
             results.append(post_to_facebook(image, dry_run))
         elif platform == "x":
             results.append(post_to_x(image, dry_run))
+        elif platform == "bluesky":
+            results.append(post_to_bluesky(image, dry_run))
         else:
             results.append(
                 {"platform": platform, "ok": False, "error": f"Unknown platform: {platform}"}
@@ -75,6 +78,11 @@ def post_to_enabled_platforms(image, dry_run):
 
 def run_once(force):
     dry_run = os.getenv("DRY_RUN", "true").lower() != "false"
+    
+    # Sync images from the images folder
+    images_dir = ROOT_DIR / "data" / "images"
+    sync_images_from_folder(str(images_dir), str(IMAGES_PATH))
+    
     images = read_json(IMAGES_PATH, [])
     state = read_json(
         STATE_PATH,

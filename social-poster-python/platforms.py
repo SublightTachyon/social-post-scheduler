@@ -151,3 +151,76 @@ def post_to_x(image, dry_run):
         return {"platform": platform, "ok": True, "id": post_data["data"]["id"]}
     except Exception as error:
         return {"platform": platform, "ok": False, "error": str(error)}
+
+
+def post_to_bluesky(image, dry_run):
+    platform = "bluesky"
+    handle = os.getenv("BLUESKY_HANDLE")
+    password = os.getenv("BLUESKY_PASSWORD")
+
+    if dry_run:
+        print(f"[DRY RUN] Would post to Bluesky: \"{image.get('caption', '')}\" with image {image['id']}")
+        return {"platform": platform, "ok": True, "dryRun": True}
+
+    if not handle or not password:
+        return {
+            "platform": platform,
+            "ok": False,
+            "error": "Missing BLUESKY_HANDLE or BLUESKY_PASSWORD.",
+        }
+
+    try:
+        PDS_URL = "https://bsky.social"
+
+        # Authenticate
+        session_data = _post_json(
+            f"{PDS_URL}/xrpc/com.atproto.server.createSession",
+            {"identifier": handle, "password": password},
+            None,
+        )
+        access_token = session_data["accessToken"]
+        did = session_data["did"]
+
+        # Download and upload image
+        with urllib.request.urlopen(image["url"], timeout=30) as response:
+            image_bytes = response.read()
+            content_type = response.headers.get("Content-Type", "image/jpeg")
+
+        upload_request = urllib.request.Request(
+            f"{PDS_URL}/xrpc/com.atproto.repo.uploadBlob",
+            data=image_bytes,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": content_type,
+            },
+        )
+        with urllib.request.urlopen(upload_request, timeout=30) as response:
+            blob_data = json.loads(response.read().decode("utf-8"))
+            blob = blob_data["blob"]
+
+        # Create post with image
+        post_data = _post_json(
+            f"{PDS_URL}/xrpc/com.atproto.repo.createRecord",
+            {
+                "repo": did,
+                "collection": "app.bsky.feed.post",
+                "record": {
+                    "text": image.get("caption", ""),
+                    "createdAt": _iso_now(),
+                    "embed": {
+                        "$type": "app.bsky.embed.images",
+                        "images": [{"image": blob, "alt": image.get("caption", "")}],
+                    },
+                },
+            },
+            access_token,
+        )
+        return {"platform": platform, "ok": True, "uri": post_data.get("uri")}
+    except Exception as error:
+        return {"platform": platform, "ok": False, "error": str(error)}
+
+
+def _iso_now():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()

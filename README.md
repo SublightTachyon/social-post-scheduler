@@ -66,6 +66,13 @@ The project uses a local JSON file to remember which images have already been po
 * Easy to expand with a real database later
 * Designed to work with official APIs instead of browser automation
 
+## Supported Platforms
+
+- **Instagram** (Business Account with Graph API)
+- **Facebook** (Page posting)
+- **X / Twitter** (with media upload)
+- **Bluesky** (with AT Protocol)
+
 ---
 
 ## Folder Structure
