@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { postToFacebook } from "./platforms/facebook.js";
 import { postToInstagram } from "./platforms/instagram.js";
 import { postToX } from "./platforms/x.js";
+import { postToBluesky } from "./platforms/bluesky.js";
+import { syncImagesFromFolder } from "./utils/imageManager.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
@@ -67,6 +69,8 @@ async function postToEnabledPlatforms(image) {
       results.push(await postToFacebook(image, { dryRun }));
     } else if (platform === "x") {
       results.push(await postToX(image, { dryRun }));
+    } else if (platform === "bluesky") {
+      results.push(await postToBluesky(image, { dryRun }));
     } else {
       results.push({ platform, ok: false, error: `Unknown platform: ${platform}` });
     }
@@ -76,6 +80,11 @@ async function postToEnabledPlatforms(image) {
 }
 
 async function runOnce() {
+  const imagesDir = path.join(rootDir, "data", "images");
+  
+  // Sync images from the images folder
+  await syncImagesFromFolder(imagesDir, imagesPath);
+  
   const images = await readJson(imagesPath, []);
   const state = await readJson(statePath, {
     nextRunAt: null,

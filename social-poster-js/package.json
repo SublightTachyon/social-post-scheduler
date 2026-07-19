@@ -6,7 +6,8 @@
   "scripts": {
     "once": "node src/index.js --once",
     "force": "node src/index.js --once --force",
-    "daemon": "node src/index.js"
+    "daemon": "node src/index.js",
+    "server": "node src/imageServer.js"
   },
   "engines": {
     "node": ">=18"

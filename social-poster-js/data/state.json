@@ -1,5 +1,30 @@
 {
-  "nextRunAt": null,
-  "usedImageIds": [],
-  "history": []
+  "nextRunAt": "2026-07-23T21:52:26.443Z",
+  "usedImageIds": [
+    "sample-1"
+  ],
+  "history": [
+    {
+      "imageId": "sample-1",
+      "postedAt": "2026-07-16T21:52:26.442Z",
+      "dryRun": true,
+      "results": [
+        {
+          "platform": "instagram",
+          "ok": true,
+          "dryRun": true
+        },
+        {
+          "platform": "facebook",
+          "ok": true,
+          "dryRun": true
+        },
+        {
+          "platform": "x",
+          "ok": true,
+          "dryRun": true
+        }
+      ]
+    }
+  ]
 }
